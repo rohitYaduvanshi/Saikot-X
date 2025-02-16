@@ -25,17 +25,29 @@ DESCRIPTION: Write a clear, concise description`;
       },
     ]);
 
-    const text = await result.response.text(); // Ensure text() is awaited
+    const text = await result.response.text();
 
-    // Parse the response more precisely
+    // Parse response
     const titleMatch = text.match(/TITLE:\s*(.+)/);
     const typeMatch = text.match(/TYPE:\s*(.+)/);
     const descMatch = text.match(/DESCRIPTION:\s*(.+)/);
 
+    const title = titleMatch?.[1]?.trim() || "";
+    const reportType = typeMatch?.[1]?.trim() || "";
+    const description = descMatch?.[1]?.trim() || "";
+
+    // **Check if the report is related to violence**
+    if (!description.toLowerCase().includes("violence") && reportType.toLowerCase() !== "violence") {
+      return NextResponse.json(
+        { error: "Report submission is only allowed for violence-related incidents." },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json({
-      title: titleMatch?.[1]?.trim() || "",
-      reportType: typeMatch?.[1]?.trim() || "",
-      description: descMatch?.[1]?.trim() || "",
+      title,
+      reportType,
+      description,
     });
   } catch (error) {
     console.error("Image analysis error:", error);

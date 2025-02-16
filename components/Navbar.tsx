@@ -1,10 +1,29 @@
 "use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Request notification permission on load
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  const handleEmergencyClick = () => {
+    alert("🚨 Emergency Alert Triggered! Authorities have been notified.");
+
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("🚨 Emergency Alert!", {
+        body: "Your emergency report has been sent!",
+        icon: "/emergency-icon.png", // Add an emergency icon in public folder
+      });
+    }
+  };
 
   return (
     <>
@@ -56,10 +75,16 @@ export default function Navbar() {
                 How It Works
               </Link>
               <Link
-                href="/resources"
+                href="/Central_GOV"
                 className="text-sm text-zinc-400 hover:text-white transition-colors"
               >
-                Resources
+                Central_GOV
+              </Link>
+              <Link
+                href="/Image-location"
+                className="text-sm text-zinc-400 hover:text-white transition-colors"
+              >
+                Image Location
               </Link>
             </div>
 
@@ -71,7 +96,10 @@ export default function Navbar() {
               >
                 Contact
               </Link>
-              <button className="group flex h-9 items-center gap-2 rounded-full bg-red-500/10 pl-4 pr-5 text-sm font-medium text-red-500 ring-1 ring-inset ring-red-500/20 transition-all hover:bg-red-500/20">
+              <button 
+                onClick={handleEmergencyClick}
+                className="group flex h-9 items-center gap-2 rounded-full bg-red-500/10 pl-4 pr-5 text-sm font-medium text-red-500 ring-1 ring-inset ring-red-500/20 transition-all hover:bg-red-500/20"
+              >
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
                 Emergency: 911
               </button>
